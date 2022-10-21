@@ -14,22 +14,14 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable, IndonesiaTimeFormat;
 
     protected $fillable = [
-        'nama_lengkap','username','nim','email','password',
-        'alamat','telepon','tanggal_lahir','status'
+        'username', 'email', 'password', 'status'
     ];
 
     protected $hidden = ['password'];
 
     public function getNamaLengkapAttribute($value)
     {
-       return ucwords($value);
-    }
-
-    public function getTanggalLahirAttribute($tanggal_lahir)
-    {
-        $value = Carbon::parse($tanggal_lahir);
-        $parse = $value->locale('id');
-        return $parse->translatedFormat('d F Y');
+        return ucwords($value);
     }
 
     public function getJWTIdentifier()
@@ -44,7 +36,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function forums()
     {
-        return $this->hasMany(Forum::class)->select(['id','nama_lengkap']);
+        return $this->hasMany(Forum::class)->select(['id', 'nama_lengkap']);
     }
 
     public function forumComments()
@@ -55,5 +47,10 @@ class User extends Authenticatable implements JWTSubject
     public function jobs()
     {
         return $this->hasMany(Jobs::class);
+    }
+
+    public function detail()
+    {
+        return $this->hasOne(UserDetail::class);
     }
 }
