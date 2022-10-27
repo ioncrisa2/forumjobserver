@@ -33,7 +33,8 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::delete('forums/{forum}/comments/{comment}', [CommentController::class, 'destroy']);
     //route for user profile
     Route::get('user', [ProfileController::class, 'me']);
-    Route::put('user/{user:username}', [ProfileController::class, 'profile']);
+    Route::put('user/{id}', [ProfileController::class, 'profile']);
+    Route::post('changepassword', [ProfileController::class, 'updatePassword']);
 
     Route::group(['middleware' => 'isAdmin'], function ($router) {
         Route::get('jobs', [JobsController::class, 'index']); //show all jobs
