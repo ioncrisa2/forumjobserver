@@ -2,39 +2,68 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\UserDetail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
 
 class ProfileController extends Controller
 {
     public function me()
     {
-       return responseSuccess(true,'Profile',auth()->guard('api')->user(),200);
+        $user = User::with('detail')->find(Auth::id());
+        return responseSuccess(true, 'Profile', $user, 200);
     }
 
-    public function profile(Request $request,User $user)
+    public function profile(Request $request, $id)
     {
-        try{
-            $data = array(
-                'nama_lengkap' => $request->nama_lengkap != null ? $request->nama_lengkap : $user->nama_lengkap,
-                'username' => $request->username != null ? $request->username : $user->username,
-                'nim' => $request->nim != null ? $request->nim : $user->nim,
-                'email' => $request->email != null ? $request->email : $user->email,
-                'alamat' => $request->alamat != null ? $request->alamat : $user->alamat,
-                'telepon' => $request->telepon != null ? $request->telepon : $user->telepon,
-                'tanggal_lahir' => $request->tanggal_lahir != null ? $request->tanggal_lahir : $user->tanggal_lahir
-            );
+        try {
+            $user = User::findOrFail($id);
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->save();
 
-            $user->update($data);
+            $userDetail = [
+                'nama_lengkap' => $request->nama_lengkap,
+                'nim' => $request->nim,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'tempat_lahir' => $request->tempat_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'alamat' => $request->alamat
+            ];
 
-          return responseSuccess(true,'Profile Updated',$user,200);
+            if ($user->detail === null) {
+                $user->detail()->save($userDetail);
+            } else {
+                $user->detail->update($userDetail);
+            }
 
-        }catch(QueryException $e){
-          return responseError(false,$e->getMessage(),500);
+            return responseSuccess(true, 'Success Updating Data', $user, 200);
+        } catch (QueryException $error) {
+            return responseError(false, $error->getMessage(), 500);
+        }
+    }
+
+    public function updatePassword()
+    {
+        // dd($request->isJson());
+        // $request->json();
+        $this->validate(request(), [
+            'old_password' => 'required',
+            'new_password' => 'required|confirmed'
+        ]);
+
+        if (!Hash::check(request()->old_password, auth()->guard('api')->user()->password)) {
+            return responseError(false, 'Old Password Does Match!!', 400);
         }
 
+        User::where('id', Auth::id())->update([
+            'password' => Hash::make(request()->new_password)
+        ]);
+
+        return responseSuccess(true, 'Success Update Password', null, 200);
     }
 }

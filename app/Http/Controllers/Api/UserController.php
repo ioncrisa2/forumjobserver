@@ -13,7 +13,8 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $user = User::select('id', 'nim', 'nama_lengkap', 'created_at')->where('status', 'ALUMNI')->paginate(10);
+            $user = User::with('detail')->get();
+
             return responseSuccess(true, 'Semua Data Alumni', $user, Response::HTTP_OK);
         } catch (QueryException $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);

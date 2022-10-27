@@ -2,33 +2,33 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Database\QueryException;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegisterController extends Controller
 {
-    public function __invoke(RegisterRequest $request): \Illuminate\Http\JsonResponse
+    public function __invoke(RegisterRequest $request): JsonResponse
     {
-        try{
+        try {
             $request->validated();
 
-            $user = User::create([
-                'nama_lengkap' => $request->nama_lengkap,
+            $user = new User();
+
+            $user->create([
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'nim' => $request->nim
+                'role_id' => $request->role_id
             ]);
 
-           return responseSuccess(true,'Register Successfully',$user,Response::HTTP_CREATED);
-
-        }catch(QueryException $e){
-            return responseError(false,$e->getMessage(),Response::HTTP_BAD_REQUEST);
+            return responseSuccess(true, 'Register Successfully', $user, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-
     }
 }

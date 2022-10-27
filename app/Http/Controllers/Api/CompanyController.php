@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Api;
+<?php
+
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
@@ -18,15 +20,17 @@ class CompanyController extends Controller
 
     public function index(): JsonResponse
     {
-        try{
-            $companies = Company::when(request('q'), fn($company) =>
-                $company->orWhere('name', 'like', '%' . request('q') . '%')
-                        ->orWhere('established', 'like', '%' . request('q') . '%')
-                        ->orWhereHas('location',fn($company) => $company->where('country', 'like', '%' . request('q') . '%'))
-            )->orderBy('id','DESC')->paginate(10);
+        try {
+            $companies = Company::when(
+                request('q'),
+                fn ($company) => $company->orWhere('name', 'like', '%' . request('q') . '%')
+                    ->orWhere('established', 'like', '%' . request('q') . '%')
+                    ->orWhereHas('location', fn ($company) => $company->where('country', 'like', '%' . request('q') . '%'))
+            )->orderBy('id', 'DESC');
+
 
             return responseSuccess(true, 'Success', $companies, Response::HTTP_OK);
-        }catch(Throwable $e){
+        } catch (Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,8 +69,8 @@ class CompanyController extends Controller
             $company = Company::findOrFail($company->id);
             return responseSuccess(true, 'Company Data', $company, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-           return responseError(false, $e->getMessage(), Response::HTTP_NOT_FOUND);
-        } catch(\Throwable  $e) {
+            return responseError(false, $e->getMessage(), Response::HTTP_NOT_FOUND);
+        } catch (\Throwable  $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -93,7 +97,6 @@ class CompanyController extends Controller
             ]);
 
             return responseSuccess(true, 'Success', $company, Response::HTTP_OK);
-
         } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -105,7 +108,7 @@ class CompanyController extends Controller
             $user = auth('api')->user();
 
             if ($user->status != 'ADMIN')
-               return $this->responseError(false, 'You are not authorized to perform this action!', null, Response::HTTP_UNAUTHORIZED);
+                return $this->responseError(false, 'You are not authorized to perform this action!', null, Response::HTTP_UNAUTHORIZED);
 
             //delete company data with location data
             $company->delete();
@@ -115,7 +118,7 @@ class CompanyController extends Controller
             return responseSuccess(true, 'Company deleted successfully!', 'content deleted!', Response::HTTP_OK);
         } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }catch(QueryException $e){
+        } catch (QueryException $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
@@ -129,13 +132,13 @@ class CompanyController extends Controller
 
     public function exportExcel(): JsonResponse
     {
-       return responseSuccess(true, 'Company exported successfully!', Company::all(), Response::HTTP_OK);
+        return responseSuccess(true, 'Company exported successfully!', Company::all(), Response::HTTP_OK);
     }
 
     public function deleteAll(): JsonResponse
     {
         Company::whereNotNull('id')->delete();
         Location::whereNotNull('id')->delete();
-        return responseSuccess(true, 'Semua data perusahaan terhapus',null,Response::HTTP_NO_CONTENT);
+        return responseSuccess(true, 'Semua data perusahaan terhapus', null, Response::HTTP_NO_CONTENT);
     }
 }

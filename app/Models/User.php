@@ -14,15 +14,12 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable, IndonesiaTimeFormat;
 
     protected $fillable = [
-        'username', 'email', 'password', 'status'
+        'username', 'email', 'password', 'role_id'
     ];
 
     protected $hidden = ['password'];
 
-    public function getNamaLengkapAttribute($value)
-    {
-        return ucwords($value);
-    }
+    protected $with = ['detail'];
 
     public function getJWTIdentifier()
     {
@@ -32,6 +29,11 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     public function forums()
@@ -51,6 +53,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function detail()
     {
-        return $this->hasOne(UserDetail::class);
+        return $this->hasOne(UserDetail::class, 'user_id');
     }
 }

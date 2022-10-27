@@ -17,9 +17,9 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        $userStatus = $request->user()->status;
+        $role = $request->user()->role_id;
 
-        if ($userStatus == 'ADMIN') {
+        if ($role === 1) {
             return $next($request);
         } else {
             return response()->json([

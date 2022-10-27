@@ -14,18 +14,17 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_lengkap' => 'required',
             'username' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'confirm_password' => 'required|same:password'
+            'confirm_password' => 'required|same:password',
+            'role_id' => 'required'
         ];
     }
 
     public function messages()
     {
         return [
-            'nama_lengkap.required' => 'Nama Lengkap tidak boleh kosong!',
             'username.required' => 'Username tidak boleh kosong',
             'email.required' => 'Email tidak boleh kosong!',
             'email.email' => 'Format email tidak valid!',
