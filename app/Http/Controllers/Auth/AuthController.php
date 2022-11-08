@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
-use Illuminate\Http\Request;
 use Throwable;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
