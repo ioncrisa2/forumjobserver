@@ -19,8 +19,6 @@ class User extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
-    protected $with = ['detail'];
-
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -38,7 +36,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function forums()
     {
-        return $this->hasMany(Forum::class)->select(['id', 'nama_lengkap']);
+        return $this->hasMany(Forum::class);
     }
 
     public function forumComments()

@@ -23,27 +23,29 @@ class JobsController extends Controller
 
     public function index()
     {
-        try{
-           $searchByQuery = request('q');
-           $jobs = Jobs::when($searchByQuery, fn ($job) =>
-                    $job->orWhere('job_name', 'like', '%' . $searchByQuery . '%')
-                        ->orWhereHas('company',fn($company) =>
-                            $company->where('name', 'like', '%' . $searchByQuery . '%'))
-            )->orderBy('id','DESC')->paginate(5);
+        try {
+            $searchByQuery = request('q');
+            $jobs = Jobs::when(
+                $searchByQuery,
+                fn ($job) =>
+                $job->orWhere('job_name', 'like', '%' . $searchByQuery . '%')
+                    ->orWhereHas('company', fn ($company) =>
+                    $company->where('name', 'like', '%' . $searchByQuery . '%'))
+            )->orderBy('id', 'DESC')->paginate(5);
 
             return responseSuccess(true, 'Success', $jobs, Response::HTTP_OK);
-        }catch(Exception $e){
-           return $this->responseError(false, $e->getMessage(), null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return $this->responseError(false, $e->getMessage(), null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function store(JobRequest $request)
     {
-        try{
+        try {
             $request->validated();
 
             $poster = $request->file('poster');
-            $poster->storeAs('poster',$poster->hashName());
+            $poster->storeAs('poster', $poster->hashName());
 
             $job = Jobs::create([
                 'user_id' => auth('api')->user()->id,
@@ -56,24 +58,23 @@ class JobsController extends Controller
             ]);
 
             return responseSuccess(true, 'Success', $job, Response::HTTP_CREATED);
-
-        }catch(QueryException $e){
-           return  $this->responseError(false, $e->getMessage(), null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (QueryException $e) {
+            return  $this->responseError(false, $e->getMessage(), null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(Jobs $job): JsonResponse
     {
-       return responseSuccess(true, 'Success', $job, Response::HTTP_OK);
+        return responseSuccess(true, 'Success', $job, Response::HTTP_OK);
     }
 
     public function update(JobRequest $request, Jobs $job)
     {
-        try{
+        try {
             $request->validated();
 
-            if($request->poster){
-                Storage::disk('public')->delete('poster/'. basename($job->poster));
+            if ($request->poster) {
+                Storage::disk('public')->delete('poster/' . basename($job->poster));
 
                 $poster = $request->poster;
                 $poster->storeAs('public/poster/', $poster->hashName());
@@ -99,18 +100,17 @@ class JobsController extends Controller
             ]);
 
             return responseSuccess(true, 'Data Pekerjaan Berhasil Diperbarui', $job, Response::HTTP_OK);
-
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
     public function destroy(Jobs $job)
     {
-        try{
+        try {
             $job->delete();
             return responseSuccess(true, 'Data Pekerjaan Berhasil Dihapus', null, Response::HTTP_OK);
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -118,7 +118,7 @@ class JobsController extends Controller
     public function import(JobImportRequest $request): JsonResponse
     {
         $request->validated();
-        (new JobImport)->import($request->file,null,Excel::XLSX);
+        (new JobImport)->import($request->file, null, Excel::XLSX);
         return responseSuccess(true, 'Data Pekerjaan Berhasil Diimport', null, Response::HTTP_OK);
     }
 
@@ -129,11 +129,11 @@ class JobsController extends Controller
 
     public function deleteAll()
     {
-        try{
+        try {
             Jobs::whereNotNull('id')->delete();
-            return responseSuccess(true,'Semua Data Pekerjaan telah dihapus!',null,Response::HTTP_NO_CONTENT);
-        }catch(Throwable $e){
-            return responseError(false,$e->getMessage(),Response::HTTP_BAD_REQUEST);
+            return responseSuccess(true, 'Semua Data Pekerjaan telah dihapus!', null, Response::HTTP_NO_CONTENT);
+        } catch (Throwable $e) {
+            return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 }
