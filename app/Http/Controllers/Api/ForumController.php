@@ -2,93 +2,75 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ForumRequest;
-use App\Http\Resources\ForumResource;
-use App\Models\Forum;
 use App\Traits\AuthUser;
-use Illuminate\Database\QueryException;
+use App\Services\ForumService;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
+use App\Http\Requests\ForumRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 
 class ForumController extends Controller
 {
     use AuthUser;
 
+    protected $forumService;
+
     public function __construct()
     {
+        $this->forumService = new ForumService();
         return auth()->shouldUse('api');
     }
 
     public function index()
     {
-        try{
-            $forum = Forum::all();
+        try {
+            $forum = $this->forumService->showAll();
 
-            return responseSuccess(true, 'Success', $forum, Response::HTTP_OK);
-        }catch(QueryException $e){
-            return response()->json(['error' => $e->getMessage()],400);
+            return responseSuccess(true, 'Semua Data Forum', $forum, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
     public function store(ForumRequest $request)
     {
-        try{
+        try {
             $request->validated();
-            $user = $this->getAuthUser();
 
-            $user->forums()->create([
-                'title'         => $request->title,
-                'body'          => $request->body,
-                'slug'          => Str::slug($request->title,'-'),
-                'category'      => $request->category
-            ]);
+            $this->forumService->storeData($request->all());
 
-            return response()->json(['message'=>'Successfully Posted!'],201);
-        }catch(QueryException $e){
-            return response()->json(['error' => $e->getMessage()],400);
+            return responseSuccess(true, "Success Adding Forum", null, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
     public function show($id)
     {
-        try{
-            $forum = Forum::findOrFail($id);
+        try {
+            $forum = $this->forumService->showDetail($id);
             return responseSuccess(true, 'Success', $forum, Response::HTTP_OK);
-        }catch(QueryException $e){
-            return responseError(false,$e->getMessage(), Response::HTTP_NOT_FOUND);
+        } catch (QueryException $e) {
+            return responseError(false, $e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 
     public function update(ForumRequest $request, $id)
     {
-        try{
+        try {
             $request->validated();
-            $forum = Forum::findOrFail($id)->first();
-
-            $this->checkOwnership($forum->id);
-
-
-            $forum->update([
-                'title' => $request->title,
-                'body' => $request->body,
-                'category' => $request->category
-            ]);
+            $forum = $this->forumService->updateData($id, $request->all());
 
             return responseSuccess(true, 'Success', $forum, Response::HTTP_OK);
-        }catch(QueryException $e){
-            return response()->json(['error' => $e->getMessage()],400);
+        } catch (QueryException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
     public function destroy($id)
     {
-        $forum = Forum::find($id);
-        $this->getAuthUser();
-        $this->checkOwnership($forum->user_id);
+        $this->forumService->deleteData($id);
 
-        $forum->delete();
-
-        return responseSuccess(true, 'Success', $forum, Response::HTTP_OK);
+        return responseSuccess(true, 'Success', '', Response::HTTP_OK);
     }
 }
