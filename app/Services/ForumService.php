@@ -20,12 +20,14 @@ class ForumService
     {
         $user = $this->getAuthUser();
 
-        $user->forums()->create([
+        $forum = $user->forums()->create([
             'title'         => $data['title'],
             'body'          => $data['body'],
             'slug'          => Str::slug($data['title'], '-'),
             'category'      => $data['category']
         ]);
+
+        return Forum::findOrFail($forum->id);
     }
 
     public function showDetail($id)

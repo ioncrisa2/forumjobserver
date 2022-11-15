@@ -11,8 +11,6 @@ use Illuminate\Database\QueryException;
 
 class ForumController extends Controller
 {
-    use AuthUser;
-
     protected $forumService;
 
     public function __construct()
@@ -37,9 +35,9 @@ class ForumController extends Controller
         try {
             $request->validated();
 
-            $this->forumService->storeData($request->all());
+            $forum = $this->forumService->storeData($request->all());
 
-            return responseSuccess(true, "Success Adding Forum", null, Response::HTTP_CREATED);
+            return responseSuccess(true, "Success Adding Forum", $forum, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
