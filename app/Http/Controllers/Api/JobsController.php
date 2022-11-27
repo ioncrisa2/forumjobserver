@@ -87,14 +87,4 @@ class JobsController extends Controller
     {
         return responseSuccess(true, 'Data Pekerjaan Berhasil Diexport', Jobs::all(), Response::HTTP_OK);
     }
-
-    public function deleteAll()
-    {
-        try {
-            Jobs::whereNotNull('id')->delete();
-            return responseSuccess(true, 'Semua Data Pekerjaan telah dihapus!', null, Response::HTTP_NO_CONTENT);
-        } catch (Throwable $e) {
-            return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-    }
 }
