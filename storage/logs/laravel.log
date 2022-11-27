@@ -638,3 +638,7 @@
 [stacktrace]
 #0 {main}
 "} 
+[2022-11-27 21:41:51] local.ERROR: Cannot redeclare responseSuccess() (previously declared in C:\xampp\htdocs\server\app\Helper.php:6) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare responseSuccess() (previously declared in C:\\xampp\\htdocs\\server\\app\\Helper.php:6) at C:\\xampp\\htdocs\\server\\app\\Helper.php:6)
+[stacktrace]
+#0 {main}
+"} 
