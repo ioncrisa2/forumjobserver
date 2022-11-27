@@ -5,41 +5,39 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\UserDetail;
+use App\Services\ProfileService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
 class ProfileController extends Controller
 {
+    private ProfileService $profileService;
+
+    public function __construct()
+    {
+        $this->profileService = new ProfileService();
+    }
+
     public function me()
     {
-        $user = User::with('detail')->find(Auth::id());
+        $user = $this->profileService->userProfile();
         return responseSuccess(true, 'Profile', $user, 200);
     }
 
     public function profile(Request $request, $id)
     {
         try {
-            $user = User::findOrFail($id);
-            $user->username = $request->username;
-            $user->email = $request->email;
-            $user->save();
-
-            $userDetail = [
-                'nama_lengkap' => $request->nama_lengkap,
-                'nim' => $request->nim,
+            $user = $this->profileService->profileUpdater($id, [
+                'username'      => $request->username,
+                'email'         => $request->email,
+                'nama_lengkap'  => $request->nama_lengkap,
+                'nim'           => $request->nim,
                 'tanggal_lahir' => $request->tanggal_lahir,
-                'tempat_lahir' => $request->tempat_lahir,
+                'tempat_lahir'  => $request->tempat_lahir,
                 'jenis_kelamin' => $request->jenis_kelamin,
-                'alamat' => $request->alamat
-            ];
-
-            if ($user->detail === null) {
-                $user->detail()->save($userDetail);
-            } else {
-                $user->detail->update($userDetail);
-            }
+                'alamat'        => $request->alamat
+            ]);
 
             return responseSuccess(true, 'Success Updating Data', $user, 200);
         } catch (QueryException $error) {
