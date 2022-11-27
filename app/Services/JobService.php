@@ -16,12 +16,11 @@ class JobService
     {
         $jobs = Jobs::when(
             $request,
-            fn ($job) => $job->orWhere('job_name', 'like', '%' . $request . '%')
-                ->orWhereHas(
-                    'company',
-                    fn ($company) =>
-                    $company->where('name', 'like', '%' . $request . '%')
-                )
+            fn ($job) =>
+            $job->orWhere('job_name', 'like', '%' . $request . '%')->orWhereHas(
+                'company',
+                fn ($company) => $company->where('name', 'like', '%' . $request . '%')
+            )
         )->orderBy('id', 'DESC')->paginate(5);
 
         return $jobs;
@@ -101,5 +100,13 @@ class JobService
         }
 
         return $job;
+    }
+
+    public function deleteData($id)
+    {
+        $job = Jobs::findOrFail($id);
+        $job->types()->detach();
+        $this->deleteFromServer('public', "poster/" . basename($job->poster));
+        $job->delete();
     }
 }

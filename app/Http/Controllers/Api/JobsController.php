@@ -66,10 +66,10 @@ class JobsController extends Controller
         }
     }
 
-    public function destroy(Jobs $job)
+    public function destroy($id)
     {
         try {
-            $job->delete();
+            $this->jobService->deleteData($id);
             return responseSuccess(true, 'Data Pekerjaan Berhasil Dihapus', null, Response::HTTP_OK);
         } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
