@@ -19,7 +19,7 @@ use Throwable;
 class CompanyController extends Controller
 {
 
-    private $companyService;
+    private CompanyService $companyService;
 
     public function __construct()
     {

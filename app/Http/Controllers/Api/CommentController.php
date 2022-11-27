@@ -15,7 +15,7 @@ class CommentController extends Controller
 {
     use AuthUser;
 
-    private $commentService;
+    private CommentController $commentService;
 
     public function __construct()
     {
