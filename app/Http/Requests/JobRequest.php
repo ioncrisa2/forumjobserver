@@ -26,12 +26,12 @@ class JobRequest extends FormRequest
         return [
             'job_name' => 'required',
             'job_description' => 'required',
-            'poster' => 'mimes:png,jpg|max:2048',
-            'job_type' => 'required',
+            'poster' => 'mimes:png,jpg|max:2048'
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'job_name.required' => 'Nama Pekerjaan tidak boleh kosong',
             'job_description.required' => 'Deskripsi Pekerjaan tidak boleh kosong',

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Forum;
 use App\Traits\AuthUser;
 use Illuminate\Support\Str;
@@ -50,7 +49,7 @@ class ForumService
 
     public function deleteData($id)
     {
-        $forum = Forum::findOrFail($id)->first;
+        $forum = Forum::findOrFail($id)->first();
         $this->getAuthUser();
         $this->checkOwnership($forum->user_id);
 

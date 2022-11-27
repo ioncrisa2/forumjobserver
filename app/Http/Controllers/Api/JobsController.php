@@ -7,31 +7,27 @@ use App\Http\Requests\JobImportRequest;
 use App\Http\Requests\JobRequest;
 use App\Imports\JobImport;
 use App\Models\Jobs;
-use App\Traits\AuthUser;
-use Carbon\Carbon;
+use App\Services\JobService;
 use Exception;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Throwable;
 
 class JobsController extends Controller
 {
-    use AuthUser;
+    private JobService $jobService;
+
+    public function __construct()
+    {
+        $this->jobService = new JobService();
+    }
 
     public function index()
     {
         try {
             $searchByQuery = request('q');
-            $jobs = Jobs::when(
-                $searchByQuery,
-                fn ($job) =>
-                $job->orWhere('job_name', 'like', '%' . $searchByQuery . '%')
-                    ->orWhereHas('company', fn ($company) =>
-                    $company->where('name', 'like', '%' . $searchByQuery . '%'))
-            )->orderBy('id', 'DESC')->paginate(5);
+            $jobs = $this->jobService->showAll($searchByQuery);
 
             return responseSuccess(true, 'Success', $jobs, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -44,22 +40,11 @@ class JobsController extends Controller
         try {
             $request->validated();
 
-            $poster = $request->file('poster');
-            $poster->storeAs('poster', $poster->hashName());
-
-            $job = Jobs::create([
-                'user_id' => auth('api')->user()->id,
-                'company_id' => $request->company_id,
-                'job_name' => $request->job_name,
-                'job_description' => $request->job_description,
-                'poster' => $poster->hashName(),
-                'job_type' => $request->job_type,
-                'end_date' => Carbon::parse($request->end_date)->format('Y-m-d'),
-            ]);
+            $job = $this->jobService->storeData($request->all());
 
             return responseSuccess(true, 'Success', $job, Response::HTTP_CREATED);
-        } catch (QueryException $e) {
-            return  $this->responseError(false, $e->getMessage(), null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Throwable $e) {
+            return  responseError(false, $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -68,38 +53,14 @@ class JobsController extends Controller
         return responseSuccess(true, 'Success', $job, Response::HTTP_OK);
     }
 
-    public function update(JobRequest $request, Jobs $job)
+    public function update(JobRequest $request, int $id): JsonResponse
     {
         try {
             $request->validated();
 
-            if ($request->poster) {
-                Storage::disk('public')->delete('poster/' . basename($job->poster));
+            $updatejob = $this->jobService->updateData($id, $request->all());
 
-                $poster = $request->poster;
-                $poster->storeAs('public/poster/', $poster->hashName());
-
-                $job->update([
-                    'user_id'           => auth('api')->user()->id,
-                    'company_id'        => $request->company_id,
-                    'job_name'          => $request->job_name,
-                    'job_description'   => $request->job_description,
-                    'poster'            => $poster->hashName(),
-                    'job_type'          => $request->job_type,
-                    'end_date'          => Carbon::parse($request->end_date)->format('Y-m-d'),
-                ]);
-            }
-
-            $job->update([
-                'user_id'           => auth('api')->user()->id,
-                'company_id'        => $request->company_id,
-                'job_name'          => $request->job_name,
-                'job_description'   => $request->job_description,
-                'job_type'          => $request->job_type,
-                'end_date'          => Carbon::parse($request->end_date)->format('Y-m-d'),
-            ]);
-
-            return responseSuccess(true, 'Data Pekerjaan Berhasil Diperbarui', $job, Response::HTTP_OK);
+            return responseSuccess(true, 'Data Pekerjaan Berhasil Diperbarui', $updatejob, Response::HTTP_OK);
         } catch (\Throwable $e) {
             return responseError(false, $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

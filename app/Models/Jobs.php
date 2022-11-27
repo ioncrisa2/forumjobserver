@@ -11,27 +11,31 @@ class Jobs extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id','user_id','job_name',
-        'job_description','job_type','poster','end_date'
+        'company_id', 'user_id', 'job_name',
+        'job_description', 'poster', 'end_date'
     ];
 
     protected $with = [
-        'company','user'
+        'company', 'user', 'types'
     ];
 
-    public function getPosterAttribute($poster){
-        //
-        return asset('storage/public/poster/' . $poster);
+    public function getPosterAttribute($poster)
+    {
+        return asset('storage/poster/' . $poster);
     }
 
     public function company()
     {
-        return $this->belongsTo(Company::class)->select(['id','name']);
+        return $this->belongsTo(Company::class)->select(['id', 'name']);
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id')->select(['id','username']);
+        return $this->belongsTo(User::class, 'user_id')->select(['id', 'username']);
     }
 
+    public function types()
+    {
+        return $this->belongsToMany(Types::class, 'job_type', 'jobs_id', 'types_id');
+    }
 }
