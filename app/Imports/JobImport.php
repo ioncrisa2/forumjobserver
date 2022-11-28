@@ -22,7 +22,6 @@ class JobImport implements ToModel, WithHeadingRow, WithValidation
 
     public function model(array $row)
     {
-        // dd($this->getCompanyId($row['company']));
 
         $jobs = Jobs::create([
             'user_id' => auth('api')->user()->id,
@@ -36,7 +35,8 @@ class JobImport implements ToModel, WithHeadingRow, WithValidation
         return $jobs;
     }
 
-    private function getEndDate($date){
+    private function getEndDate($date)
+    {
         return Carbon::instance(Date::excelToDateTimeObject($date));
     }
 
@@ -44,7 +44,7 @@ class JobImport implements ToModel, WithHeadingRow, WithValidation
     {
         $companyList = Company::select('id', 'name')->get();
         //insert company list to a new array
-        $name = $companyList->where('name',$company)->first();
+        $name = $companyList->where('name', $company)->first();
         return $name->id;
     }
 
@@ -69,5 +69,4 @@ class JobImport implements ToModel, WithHeadingRow, WithValidation
             'end_date.required'         => 'End date is required',
         ];
     }
-
 }
