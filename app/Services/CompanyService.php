@@ -8,9 +8,13 @@ use App\Traits\AuthUser;
 
 class CompanyService
 {
-    public function showAll()
+    public function showAll($request)
     {
-        return Company::all();
+        $company =  Company::when($request, function ($company) use ($request) {
+            $company = $company->where('name', 'like', '%' . $request . '%');
+        })->latest()->paginate(5);
+
+        return $company;
     }
 
     public function storeData(array $data)

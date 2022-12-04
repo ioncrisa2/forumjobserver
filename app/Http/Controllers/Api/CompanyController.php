@@ -29,8 +29,8 @@ class CompanyController extends Controller
     public function index(): JsonResponse
     {
         try {
-            // $queryParams = request('q');
-            $companies = $this->companyService->showAll();
+            $queryParams = request('q');
+            $companies = $this->companyService->showAll($queryParams);
 
             return responseSuccess(true, 'Success', $companies, Response::HTTP_OK);
         } catch (Throwable $e) {
