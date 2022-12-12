@@ -17,11 +17,8 @@ class JobService
         $jobs = Jobs::when(
             $request,
             fn ($job) =>
-            $job->orWhere('job_name', 'like', '%' . $request . '%')->orWhereHas(
-                'company',
-                fn ($company) => $company->where('name', 'like', '%' . $request . '%')
-            )
-        )->orderBy('id', 'DESC')->paginate(5);
+            $job->orWhere('job_name', 'like', '%' . $request . '%')
+        )->orderBy('id', 'DESC')->paginate(10);
 
         return $jobs;
     }
@@ -55,7 +52,7 @@ class JobService
 
     public function showData($id)
     {
-        return Jobs::findOrFail($id);
+        return Jobs::with('company')->whereId($id)->first();
     }
 
     public function updateData($id, array $data)

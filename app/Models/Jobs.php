@@ -16,12 +16,12 @@ class Jobs extends Model
     ];
 
     protected $with = [
-        'company', 'user', 'types'
+        'user', 'types', 'company'
     ];
 
     public function getPosterAttribute($poster)
     {
-        return asset('storage/poster/' . $poster);
+        return asset('storage/public/poster/' . $poster);
     }
 
     public function company()
