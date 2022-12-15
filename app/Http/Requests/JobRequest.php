@@ -26,7 +26,6 @@ class JobRequest extends FormRequest
         return [
             'job_name' => 'required',
             'job_description' => 'required',
-            'poster' => 'mimes:png,jpg|max:2048'
         ];
     }
 
@@ -36,8 +35,6 @@ class JobRequest extends FormRequest
             'job_name.required' => 'Nama Pekerjaan tidak boleh kosong',
             'job_description.required' => 'Deskripsi Pekerjaan tidak boleh kosong',
             'poster.required' => 'Poster Pekerjaan tidak boleh kosong',
-            'poster.mimes' => 'Poster Pekerjaan harus berupa file gambar',
-            'poster.max' => 'Poster Pekerjaan tidak boleh lebih dari 2MB',
             'job_type.required' => 'Tipe Pekerjaan tidak boleh kosong',
         ];
     }

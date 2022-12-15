@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Cloudinary\CloudinaryStorage;
 use Carbon\Carbon;
 use App\Models\Jobs;
 use App\Models\Types;
@@ -25,7 +26,11 @@ class JobService
 
     public function storeData(array $data)
     {
-        $image = $this->uploadToServer('public/poster', $data['poster']);
+        if ($data['poster']) {
+            // $image = $this->uploadToServer('public/poster', $data['poster']);
+            $image = $data['poster'];
+            $poster = CloudinaryStorage::upload($image->getRealPath(), $image->getClientOriginalName());
+        }
         $typeArr = [];
 
         foreach ($data['type'] as $index => $value) {
@@ -41,7 +46,7 @@ class JobService
         $job->company_id = $data['company_id'];
         $job->job_name = $data['job_name'];
         $job->job_description = $data['job_description'];
-        $job->poster = $image;
+        $job->poster = $poster != null ? $poster : null;
         $job->end_date = $data['end_date'];
         $job->save();
 
@@ -70,11 +75,9 @@ class JobService
         }
 
         if ($data['poster']) {
-            $filePath = "poster/" . basename($data['poster']);
+            $image = $data['poster'];
 
-            $this->deleteFromServer('public', $filePath);
-
-            $poster = $this->uploadToServer('poster', $data['poster']);
+            $poster = CloudinaryStorage::replace($image, $image->getRealPath(), $image->getClientOriginalName());
 
             $job->user_id = auth('api')->user()->id;
             $job->company_id = $data['company_id'];
@@ -92,9 +95,9 @@ class JobService
             $job->job_description = $data['job_description'];
             $job->end_date = Carbon::parse($data['end_date'])->format('Y-m-d');
             $job->save();
-
-            $job->types()->sync($typeArr);
         }
+
+        $job->types()->sync($typeArr);
 
         return $job;
     }
@@ -103,7 +106,7 @@ class JobService
     {
         $job = Jobs::findOrFail($id);
         $job->types()->detach();
-        $this->deleteFromServer('public', "poster/" . basename($job->poster));
+        CloudinaryStorage::delete($job->poster);
         $job->delete();
     }
 }

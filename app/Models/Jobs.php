@@ -19,10 +19,10 @@ class Jobs extends Model
         'user', 'types', 'company'
     ];
 
-    public function getPosterAttribute($poster)
-    {
-        return asset('storage/public/poster/' . $poster);
-    }
+    // public function getPosterAttribute($poster)
+    // {
+    //     return asset('storage/public/poster/' . $poster);
+    // }
 
     public function company()
     {

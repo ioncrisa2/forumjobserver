@@ -17,7 +17,7 @@ class CreateJobsTable extends Migration
             $table->id();
             $table->string('job_name', 128)->index();
             $table->text('job_description');
-            $table->string('poster')->nullable()->index();
+            $table->text('poster')->nullable();
             $table->datetime('end_date')->nullable()->index();
             $table->unsignedBigInteger('company_id')->index();
             $table->unsignedBigInteger('user_id')->index();
