@@ -15,13 +15,7 @@ class JobService
 
     public function showAll($request)
     {
-        $jobs = Jobs::when(
-            $request,
-            fn ($job) =>
-            $job->orWhere('job_name', 'like', '%' . $request . '%')
-        )->orderBy('id', 'DESC')->paginate(10);
-
-        return $jobs;
+        return Jobs::all();
     }
 
     public function storeData(array $data)
@@ -47,7 +41,7 @@ class JobService
         $job->job_name = $data['job_name'];
         $job->job_description = $data['job_description'];
         $job->poster = $poster != null ? $poster : null;
-        $job->end_date = $data['end_date'];
+        $job->end_date = Carbon::parse($data['end_date'])->format('Y-m-d');
         $job->save();
 
         $job->types()->attach($typeArr);

@@ -10,11 +10,7 @@ class CompanyService
 {
     public function showAll($request)
     {
-        $company =  Company::when($request, function ($company) use ($request) {
-            $company = $company->where('name', 'like', '%' . $request . '%');
-        })->latest()->paginate(5);
-
-        return $company;
+        return Company::all();
     }
 
     public function storeData(array $data)
