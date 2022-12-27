@@ -12,7 +12,7 @@ class ForumService
 
     public function showAll()
     {
-        return Forum::all();
+        return Forum::latest('created_at')->get();
     }
 
     public function storeData($data)
@@ -37,7 +37,7 @@ class ForumService
     public function updateData($id, $data)
     {
         $forum = Forum::findOrFail($id);
-        $this->checkOwnership($forum->id);
+        $this->checkOwnership($forum->user_id);
         $forum->update([
             'title'     => $data['title'],
             'body'      => $data['body'],
