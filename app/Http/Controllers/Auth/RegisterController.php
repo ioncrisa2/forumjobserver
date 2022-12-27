@@ -17,13 +17,20 @@ class RegisterController extends Controller
         try {
             $request->validated();
 
-            $user = new User();
-
-            $user->create([
+            $user = User::create([
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role_id' => $request->role_id
+            ]);
+
+            $user->detail()->create([
+                'nama_lengkap' => $request->nama_lengkap,
+                'nim' => $request->nim,
+                'tanggal_lahir' => date('Y-m-d', strtotime($request->tanggal_lahir)),
+                'tempat_lahir' => $request->tempat_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'alamat' => $request->alamat,
             ]);
 
             return responseSuccess(true, 'Register Successfully', $user, Response::HTTP_CREATED);

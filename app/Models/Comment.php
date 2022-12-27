@@ -10,16 +10,17 @@ class Comment extends Model
 {
     use HasFactory, IndonesiaTimeFormat;
 
-    protected $fillable = ['body','forum_id','user_id'];
+    protected $fillable = ['body', 'forum_id', 'user_id'];
+
+    protected $with = ['user'];
 
     public function user()
     {
-        return $this->belongsTo(User::class)->select(['id','username']);
+        return $this->belongsTo(User::class)->select(['id', 'username']);
     }
 
     public function forum()
     {
         return $this->belongsTo(Forum::class);
     }
-
 }
