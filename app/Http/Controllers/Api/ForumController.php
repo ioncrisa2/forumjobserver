@@ -11,7 +11,7 @@ use Illuminate\Database\QueryException;
 
 class ForumController extends Controller
 {
-    protected $forumService;
+    protected ForumService $forumService;
 
     public function __construct()
     {
