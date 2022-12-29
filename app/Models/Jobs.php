@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use App\Traits\IndonesiaTimeFormat;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,6 +25,11 @@ class Jobs extends Model
     // {
     //     return asset('storage/public/poster/' . $poster);
     // }
+
+    public function getEndDateAttribute($EndDate)
+    {
+        return Carbon::parse($EndDate)->format('Y-m-d');
+    }
 
     public function company()
     {

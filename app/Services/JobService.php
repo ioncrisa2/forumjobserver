@@ -15,7 +15,7 @@ class JobService
 
     public function showAll($request)
     {
-        return Jobs::all();
+        return Jobs::latest('created_at')->get();
     }
 
     public function storeData(array $data)
