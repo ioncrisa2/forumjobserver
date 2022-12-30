@@ -51,9 +51,7 @@ class CommentController extends Controller
     public function destroy(Forum $forum, Comment $comment)
     {
         try {
-            $comments = Comment::find($comment->id)->first();
-            $this->checkOwnership($comments->user_id);
-            $comments->delete();
+            $this->commentService->deleteComment($forum, $comment);
 
             return response()->json(['message' => 'success delete comment!'], 204);
         } catch (QueryException $e) {

@@ -29,7 +29,10 @@ class CommentService
         ]);
     }
 
-    public function deleteComment($idForum, $idComment)
+    public function deleteComment($forum, $comments)
     {
+        $comment = Comment::findOrFail($comments->id)->first();
+        $this->checkOwnership($comment->user_id);
+        $comment->delete();
     }
 }
