@@ -49,8 +49,7 @@ class ForumService
 
     public function deleteData($id)
     {
-        $forum = Forum::findOrFail($id)->first();
-        $this->getAuthUser();
+        $forum = Forum::findOrFail($id);
         $this->checkOwnership($forum->user_id);
 
         $forum->delete();
