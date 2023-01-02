@@ -21,11 +21,6 @@ class Jobs extends Model
         'user', 'types', 'company'
     ];
 
-    // public function getPosterAttribute($poster)
-    // {
-    //     return asset('storage/public/poster/' . $poster);
-    // }
-
     public function getEndDateAttribute($EndDate)
     {
         return Carbon::parse($EndDate)->format('Y-m-d');
