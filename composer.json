@@ -6,8 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
-        "cloudinary-labs/cloudinary-laravel": "^2.0",
-        "fruitcake/laravel-cors": "^2.1",
+        "cloudinary-labs/cloudinary-laravel": "1.0.4",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
@@ -62,10 +62,7 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "platform-check": false,
-        "platform": {
-            "php": "8.0.0"
-        }
+        "platform-check": false
     },
     "minimum-stability": "dev",
     "prefer-stable": true
