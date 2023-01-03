@@ -18,7 +18,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('forums', [ForumController::class, 'index']);
 Route::get('forums/{forum}', [ForumController::class, 'show']);
 
-Route::group(['middleware' => 'auth:api'], function ($router) {
+Route::group(['middleware' => ['auth:api', 'cors']], function ($router) {
     //route for auth
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
