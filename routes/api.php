@@ -34,6 +34,8 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
     Route::get('user', [ProfileController::class, 'me']);
     Route::put('user/{id}', [ProfileController::class, 'profile']);
     Route::post('changepassword', [ProfileController::class, 'updatePassword']);
+    Route::get('jobs', [JobsController::class, 'index']); //show all jobs
+    Route::get('jobs/{job}', [JobsController::class, 'show']);
 
     Route::group(['middleware' => 'isAdmin'], function ($router) {
         Route::get('jobs', [JobsController::class, 'index']); //show all jobs

@@ -21,17 +21,15 @@ class CommentService
 
     public function updatedComment($data, $forum, $comment)
     {
-        $forumComment = Comment::find($comment->id)->first();
+        $forumComment = Comment::find($comment->id);
         $this->checkOwnership($forumComment->user_id);
 
-        $comment->update([
-            'body' => $data['body']
-        ]);
+        $comment->update(['body' => $data['body']]);
     }
 
     public function deleteComment($forum, $comments)
     {
-        $comment = Comment::findOrFail($comments->id)->first();
+        $comment = Comment::findOrFail($comments->id);
         $this->checkOwnership($comment->user_id);
         $comment->delete();
     }
