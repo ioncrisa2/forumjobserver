@@ -1,7 +1,4 @@
 
-### README untuk `forumjobserver`
-
-```md
 # ForumJob Server
 
 ForumJob Server is the backend API for the ForumJob platform.  
